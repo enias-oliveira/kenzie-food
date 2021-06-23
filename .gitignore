@@ -2,8 +2,6 @@
 .idea
 *.log
 tmp/
-Kickstarter.csv
-
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,django
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django
