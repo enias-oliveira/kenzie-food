@@ -40,10 +40,16 @@ class Recipe(models.Model):
     )
 
     def total_reviews(self):
-        return self.reviews.count()
+        return self.reviews__count
 
     def average_rating(self):
-        return self.reviews.aggregate(models.Avg("rating"))["rating__avg"]
+        return self.reviews__rating__avg
+
+    class Meta:
+        ordering = ['name']
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
 
 class Keyword(models.Model):
