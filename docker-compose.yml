@@ -1,6 +1,11 @@
 version: '3.7'
 
 services:
+  redis:
+    image: redis
+    command: redis-server
+    ports:
+        - 6379:6379
 
   django:
     build: .
@@ -15,3 +20,6 @@ services:
       - 8000:8000
     volumes:
       - .:/code
+
+    depends_on:
+      - redis
