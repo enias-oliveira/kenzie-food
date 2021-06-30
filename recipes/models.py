@@ -39,6 +39,12 @@ class Recipe(models.Model):
         related_name="recipes",
     )
 
+    def total_reviews(self):
+        return self.reviews.count()
+
+    def average_rating(self):
+        return self.reviews.aggregate(models.Avg("rating"))["rating__avg"]
+
 
 class Keyword(models.Model):
     keyword = models.CharField(max_length=255)
