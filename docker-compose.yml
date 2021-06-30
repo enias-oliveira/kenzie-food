@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+
+  django:
+    build: .
+    container_name: dev-django
+    command: python manage.py makemigrations; python manage.py migrate
+    command: python manage.py runserver 0.0.0.0:8000
+
+    stdin_open: true
+    tty: true
+
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/code
