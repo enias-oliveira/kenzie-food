@@ -46,7 +46,6 @@ class Recipe(models.Model):
         return self.reviews__rating__avg
 
     class Meta:
-        ordering = ['name']
         indexes = [
             models.Index(fields=['name'])
         ]
