@@ -23,3 +23,11 @@ class ServingsViewSet(ReadOnlyModelViewSet):
     @silk_profile(name="Servings Retrieve")
     def retrieve(self, request, *args, **kwargs):
         return super(ServingsViewSet, self).retrieve(request, *args, **kwargs)
+
+
+class YearViewSet(ReadOnlyModelViewSet):
+    serializer_class = ServingsSerializer
+
+    def get_queryset(self):
+        year = self.kwargs["year"]
+        return Recipe.objects.filter(date_published__year=year)
