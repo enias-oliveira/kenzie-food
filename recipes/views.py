@@ -11,7 +11,11 @@ from .serializers import ServingsSerializer
 
 
 class ServingsViewSet(ReadOnlyModelViewSet):
-    queryset = Recipe.objects.all().order_by("-recipe_servings")
+    queryset = (
+        Recipe.objects.all()
+        .prefetch_related("category", "author")
+        .order_by("-recipe_servings")
+    )
     serializer_class = ServingsSerializer
 
     @method_decorator(cache_page(600))
@@ -30,4 +34,11 @@ class YearViewSet(ReadOnlyModelViewSet):
 
     def get_queryset(self):
         year = self.kwargs["year"]
-        return Recipe.objects.filter(date_published__year=year)
+        return Recipe.objects.filter(
+            date_published__year=year,
+        ).prefetch_related("category", "author")
+
+    @method_decorator(cache_page(600))
+    @silk_profile(name="Year List")
+    def list(self, request, *args, **kwargs):
+        return super(YearViewSet, self).list(request, *args, **kwargs)
