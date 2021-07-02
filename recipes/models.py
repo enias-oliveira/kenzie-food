@@ -47,7 +47,7 @@ class Recipe(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['name'])
+            models.Index(fields=['name', 'calories'])
         ]
 
 

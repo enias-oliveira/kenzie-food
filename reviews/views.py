@@ -26,7 +26,6 @@ class ReviewViewSet(ReadOnlyModelViewSet):
             "reviews",
         )
         .annotate(Count("reviews"), Avg("reviews__rating"))
-        .order_by("name")
     )
 
     serializer_class = ReviewSerializer
