@@ -44,19 +44,39 @@ class YearViewSet(ReadOnlyModelViewSet):
         return super(YearViewSet, self).list(request, *args, **kwargs)
 
 
-class CaloriesViewSet(ReadOnlyModelViewSet):
+class RecipeRangeViewSet(ReadOnlyModelViewSet):
     serializer_class = RecipeSerializer
+    field_name = None
 
     def get_queryset(self):
         min = float(self.request.query_params.get("min"))
         max = float(self.request.query_params.get("max"))
 
-        return Recipe.objects.filter(calories__range=(min, max)).prefetch_related(
+        range_filter = {
+            f"{self.field_name}__range": (
+                min,
+                max,
+            )
+        }
+
+        return Recipe.objects.filter(**range_filter).prefetch_related(
             "category",
             "author",
         )
 
     @method_decorator(cache_page(600))
-    @silk_profile(name="Calories List")
+    @silk_profile(name=f"{field_name} List")
     def list(self, request, *args, **kwargs):
-        return super(CaloriesViewSet, self).list(request, *args, **kwargs)
+        return super(RecipeRangeViewSet, self).list(request, *args, **kwargs)
+
+
+class CaloriesViewSet(RecipeRangeViewSet):
+    field_name = "calories"
+
+
+class FatContentViewSet(RecipeRangeViewSet):
+    field_name = "fat_content"
+
+
+class SaturatedFatContentViewSet(RecipeRangeViewSet):
+    field_name = "saturated_fat_content"
