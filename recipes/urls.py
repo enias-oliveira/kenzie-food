@@ -7,7 +7,10 @@ from .views import (
     YearViewSet,
     CaloriesViewSet,
     FatContentViewSet,
-    SaturatedFatContentViewSet
+    SaturatedFatContentViewSet,
+    AuthorRatingRankingViewSet,
+    RecipesCountDailyViewSet,
+    RecipesCountWeeklyViewSet,
 )
 
 from reviews.urls import reviews_router
@@ -32,6 +35,14 @@ saturated_fat_content_router.register(
     basename="saturated_fat_content",
 )
 
+author_rating_ranking_router = DefaultRouter()
+author_rating_ranking_router.register(
+    r"author_rating_ranking",
+    AuthorRatingRankingViewSet,
+    basename="author_rating_ranking",
+)
+
+
 urlpatterns = [
     path("recipes/", include(reviews_router.urls)),
     path("recipes/", include(servings_router.urls)),
@@ -39,4 +50,13 @@ urlpatterns = [
     path("recipes/", include(calories_router.urls)),
     path("recipes/", include(fat_content_router.urls)),
     path("recipes/", include(saturated_fat_content_router.urls)),
+    path("recipes/", include(author_rating_ranking_router.urls)),
+    path(
+        "recipes/recipes_count/daily/",
+        RecipesCountDailyViewSet.as_view({"get": "list"}),
+    ),
+    path(
+        "recipes/recipes_count/weekly/",
+        RecipesCountWeeklyViewSet.as_view({"get": "list"}),
+    ),
 ]

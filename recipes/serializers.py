@@ -1,5 +1,8 @@
+import datetime
+
 from rest_framework import serializers
 from .models import Recipe
+
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -26,3 +29,42 @@ class RecipeSerializer(serializers.ModelSerializer):
             "category",
             "author",
         ]
+
+
+class AuthorRatingRankingSerializer(serializers.ModelSerializer):
+    avg_rating = serializers.FloatField(source="average_rating")
+
+    class Meta:
+        model = Recipe
+        fields = (
+            "id",
+            "name",
+            "avg_rating",
+        )
+
+
+class RecipesCountDailySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = (
+            'date',
+            'recipes',
+        )
+
+
+class RecipesCountWeeklySerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField('get_first_day_of_week')
+
+    def get_first_day_of_week(self, recipe):
+        return datetime.datetime.fromisocalendar(
+            year=recipe["year"],
+            week=recipe["week"],
+            day=1,
+        ).date()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            "date",
+            "recipes",
+        )

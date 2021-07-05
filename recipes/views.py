@@ -1,13 +1,22 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
+from django.db.models import Avg, Count, Sum
+from django.db.models.functions import ExtractWeek, ExtractYear
+from django.db.models.functions import TruncDate
+
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from silk.profiling.profiler import silk_profile
 
 from recipes.models import Recipe
 
-from .serializers import RecipeSerializer
+from .serializers import (
+    RecipeSerializer,
+    AuthorRatingRankingSerializer,
+    RecipesCountDailySerializer,
+    RecipesCountWeeklySerializer,
+)
 
 
 class ServingsViewSet(ReadOnlyModelViewSet):
@@ -80,3 +89,37 @@ class FatContentViewSet(RecipeRangeViewSet):
 
 class SaturatedFatContentViewSet(RecipeRangeViewSet):
     field_name = "saturated_fat_content"
+
+
+class AuthorRatingRankingViewSet(ReadOnlyModelViewSet):
+    serializer_class = AuthorRatingRankingSerializer
+    queryset = (
+        Recipe.objects.all()
+        .prefetch_related("author", "reviews")
+        .annotate(average_rating=Avg("reviews__rating"))
+        .order_by(
+            "-average_rating",
+        )
+    )
+
+
+class RecipesCountDailyViewSet(ReadOnlyModelViewSet):
+    serializer_class = RecipesCountDailySerializer
+    queryset = (
+        Recipe.objects.annotate(date=TruncDate("date_published"))
+        .values("date")
+        .annotate(recipes=Count("id"))
+    )
+
+
+class RecipesCountWeeklyViewSet(ReadOnlyModelViewSet):
+    serializer_class = RecipesCountWeeklySerializer
+    queryset = (
+        Recipe.objects.annotate(
+            year=ExtractYear("date_published"),
+            week=ExtractWeek("date_published"),
+        )
+        .values("year", "week")
+        .annotate(recipes=Count("id"))
+        .order_by("year", "week")
+    )

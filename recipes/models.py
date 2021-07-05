@@ -1,4 +1,7 @@
+import datetime
+
 from django.db import models
+
 
 
 class Author(models.Model):
@@ -40,10 +43,22 @@ class Recipe(models.Model):
     )
 
     def total_reviews(self):
-        return self.reviews__count
+        return self.total_reviews
 
     def average_rating(self):
-        return self.reviews__rating__avg
+        return self.average_rating
+
+    def recipes(self):
+        return self.recipes
+
+    def date(self):
+        return self.date
+
+    def year(self):
+        return self.year
+
+    def week(self):
+        return self.week
 
     class Meta:
         indexes = [

@@ -20,14 +20,18 @@ class ReviewViewSet(ReadOnlyModelViewSet):
             "category",
             "author",
         )
+        .annotate(
+            total_reviews=Count("reviews"),
+            average_rating=Avg(
+                "reviews__rating",
+            ),
+        )
         .prefetch_related(
             "category",
             "author",
             "reviews",
         )
-        .annotate(Count("reviews"), Avg("reviews__rating"))
     )
-
     serializer_class = ReviewSerializer
 
     @method_decorator(cache_page(600))
