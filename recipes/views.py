@@ -1,8 +1,8 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
-from django.db.models import Avg, Count, Sum
-from django.db.models.functions import ExtractWeek, ExtractYear
+from django.db.models import Avg, Count
+from django.db.models.functions import ExtractWeek, ExtractYear, ExtractMonth
 from django.db.models.functions import TruncDate
 
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -16,6 +16,8 @@ from .serializers import (
     AuthorRatingRankingSerializer,
     RecipesCountDailySerializer,
     RecipesCountWeeklySerializer,
+    RecipesCountMonthlySerializer,
+    RecipesCountYearlySerializer,
 )
 
 
@@ -111,6 +113,10 @@ class RecipesCountDailyViewSet(ReadOnlyModelViewSet):
         .annotate(recipes=Count("id"))
     )
 
+    @method_decorator(cache_page(600))
+    def list(self, request, *args, **kwargs):
+        return super(RecipesCountDailyViewSet, self).list(request, *args, **kwargs)
+
 
 class RecipesCountWeeklyViewSet(ReadOnlyModelViewSet):
     serializer_class = RecipesCountWeeklySerializer
@@ -123,3 +129,40 @@ class RecipesCountWeeklyViewSet(ReadOnlyModelViewSet):
         .annotate(recipes=Count("id"))
         .order_by("year", "week")
     )
+
+    @method_decorator(cache_page(600))
+    def list(self, request, *args, **kwargs):
+        return super(RecipesCountWeeklyViewSet, self).list(request, *args, **kwargs)
+
+
+class RecipesCountMonthlyViewSet(ReadOnlyModelViewSet):
+    serializer_class = RecipesCountMonthlySerializer
+    queryset = (
+        Recipe.objects.annotate(
+            year=ExtractYear("date_published"),
+            month=ExtractMonth("date_published"),
+        )
+        .values("year", "month")
+        .annotate(recipes=Count("id"))
+        .order_by("year", "month")
+    )
+
+    @method_decorator(cache_page(600))
+    def list(self, request, *args, **kwargs):
+        return super(RecipesCountMonthlyViewSet, self).list(request, *args, **kwargs)
+
+
+class RecipesCountYearlyViewSet(ReadOnlyModelViewSet):
+    serializer_class = RecipesCountYearlySerializer
+    queryset = (
+        Recipe.objects.annotate(
+            year=ExtractYear("date_published"),
+        )
+        .values("year")
+        .annotate(recipes=Count("id"))
+        .order_by("year")
+    )
+
+    @method_decorator(cache_page(600))
+    def list(self, request, *args, **kwargs):
+        return super(RecipesCountYearlyViewSet, self).list(request, *args, **kwargs)

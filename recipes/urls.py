@@ -11,6 +11,8 @@ from .views import (
     AuthorRatingRankingViewSet,
     RecipesCountDailyViewSet,
     RecipesCountWeeklyViewSet,
+    RecipesCountMonthlyViewSet,
+    RecipesCountYearlyViewSet,
 )
 
 from reviews.urls import reviews_router
@@ -58,5 +60,13 @@ urlpatterns = [
     path(
         "recipes/recipes_count/weekly/",
         RecipesCountWeeklyViewSet.as_view({"get": "list"}),
+    ),
+    path(
+        "recipes/recipes_count/monthly/",
+        RecipesCountMonthlyViewSet.as_view({"get": "list"}),
+    ),
+    path(
+        "recipes/recipes_count/yearly/",
+        RecipesCountYearlyViewSet.as_view({"get": "list"}),
     ),
 ]

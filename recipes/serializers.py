@@ -68,3 +68,31 @@ class RecipesCountWeeklySerializer(serializers.ModelSerializer):
             "date",
             "recipes",
         )
+
+
+class RecipesCountMonthlySerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField('get_year_and_month')
+
+    def get_year_and_month(self, recipe):
+        return f"{recipe['year']:02}-{recipe['month']:02}"
+
+    class Meta:
+        model = Recipe
+        fields = (
+            "date",
+            "recipes",
+        )
+
+
+class RecipesCountYearlySerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField('get_year')
+
+    def get_year(self, recipe):
+        return recipe["year"]
+
+    class Meta:
+        model = Recipe
+        fields = (
+            "date",
+            "recipes",
+        )
